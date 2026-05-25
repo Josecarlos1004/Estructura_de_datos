@@ -1,10 +1,18 @@
-# Estructura_de_datos
-Sistema de gestion de un restaurante
+//Estructura_de_datos
+//Sistema de gestion de un restaurante
 #include <iostream>
-#include
+#include <string>
 using namespace std;
-struct menu;
-nombre:
+
+//Estructura del pedido
+struct pedido {
+  int id ;
+  int mesa;
+  string descripcion;
+  string estado;
+  Pedido* siguiente;
+
+  Pedido( int id, int mesa, )
 
 
 
