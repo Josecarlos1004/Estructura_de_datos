@@ -13,7 +13,134 @@ struct pedido {
   Pedido* siguiente;
 
   Pedido( int id, int mesa, )
+Pedido* crearNodoPedido(int id, int mesa, string plato, string estado) {
+    Pedido* nuevo = new Pedido;
 
+    nuevo->id = id;
+    nuevo->mesa = mesa;
+    nuevo->plato = plato;
+    nuevo->estado = estado;
+    nuevo->siguiente = nullptr;
+
+    return nuevo;
+}
+
+void agregarNodoAlFinal(Pedido*& inicio, Pedido* nuevo) {
+
+    if (inicio == nullptr) {
+        inicio = nuevo;
+        return;
+    }
+
+    Pedido* aux = inicio;
+
+    while (aux->siguiente != nullptr)
+        aux = aux->siguiente;
+
+    aux->siguiente = nuevo;
+}
+
+int contarNodos(Pedido* inicio) {
+
+    int cantidad = 0;
+    Pedido* aux = inicio;
+
+    while (aux != nullptr) {
+        cantidad++;
+        aux = aux->siguiente;
+    }
+
+    return cantidad;
+}
+
+void mostrarPedido(Pedido* pedido) {
+    cout << "ID: " << pedido->id
+         << " | Mesa: " << pedido->mesa
+         << " | Pedido: " << pedido->plato
+         << " | Estado: " << pedido->estado
+         << endl;
+}
+
+void mostrarPedidoSinEstado(Pedido* pedido) {
+    cout << "ID: " << pedido->id
+         << " | Mesa: " << pedido->mesa
+         << " | Pedido: " << pedido->plato
+         << endl;
+}
+
+Pedido* buscarPedidoPorID(int idBuscado) {
+    Pedido* aux = listaInicio;
+
+    while (aux != nullptr) {
+        if (aux->id == idBuscado)
+            return aux;
+
+        aux = aux->siguiente;
+    }
+
+    return nullptr;
+}
+
+bool hayPedidosConEstado(string estado) {
+    Pedido* aux = listaInicio;
+
+    while (aux != nullptr) {
+        if (aux->estado == estado)
+            return true;
+
+        aux = aux->siguiente;
+    }
+
+    return false;
+}
+
+void mostrarPedidosPorEstado(string estado) {
+    Pedido* aux = listaInicio;
+    bool encontrado = false;
+
+    while (aux != nullptr) {
+        if (aux->estado == estado) {
+            mostrarPedido(aux);
+            encontrado = true;
+        }
+
+        aux = aux->siguiente;
+    }
+
+    if (!encontrado)
+        cout << "\nNo hay pedidos con estado: " << estado << "." << endl;
+}
+
+void mostrarPedidosPendientesGestion() {
+    Pedido* aux = listaInicio;
+    bool encontrado = false;
+
+    while (aux != nullptr) {
+        if (aux->estado == "Pendiente") {
+            mostrarPedidoSinEstado(aux);
+            encontrado = true;
+        }
+
+        aux = aux->siguiente;
+    }
+
+    if (!encontrado)
+        cout << "\nNo hay pedidos pendientes." << endl;
+}
+
+void liberarMemoria() {
+    while (listaInicio != nullptr) {
+        Pedido* temp = listaInicio;
+        listaInicio = listaInicio->siguiente;
+        delete temp;
+    }
+
+    while (cimaPila != nullptr) {
+        Pedido* temp = cimaPila;
+        cimaPila = cimaPila->siguiente;
+        delete temp;
+    }
+}
 
 
 
