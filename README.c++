@@ -58,8 +58,9 @@ void mostrarPedido(Pedido* pedido){
   cout<< "ID" << pedido -> id
 <<"Mesa: " << pedidop -> mesa
 
-}
+} 
 
+como asi a mi no me dejaba xd
 
 
 
