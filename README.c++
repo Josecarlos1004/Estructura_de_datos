@@ -64,7 +64,7 @@ void agregarNodoAlFinal(Pedido*& inicio, Pedido* nuevo) {
 
 int contarNodos(Pedido* inicio) {
     // Funcion nueva: permite saber cuantos nodos se van a guardar.
-    // Ese numero ayuda a leer despues exactamente la misma cantidad de lineas.
+    // Este numero ayuda a leer despues exactamente la misma cantidad de lineas.
     int cantidad = 0;
     Pedido* aux = inicio;
 
