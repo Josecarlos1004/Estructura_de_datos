@@ -327,6 +327,65 @@ void cargarDatosDesdeArchivo() {
 
 
 
+//================ OPERACIONES DE COLA ================
+
+// Operacion Cola: Encolar.
+// En este programa se encola al crear un pedido con estado Pendiente.
+
+// Operacion Cola: Desencolar.
+// Toma el primer pedido pendiente, lo retira de la cola y lo marca En preparacion.
+void tomarPedido() {
+    Pedido* aux = listaInicio;
+
+    while (aux != nullptr && aux->estado != "Pendiente")
+        aux = aux->siguiente;
+
+    if (aux == nullptr) {
+        cout << "\nNo hay pedidos pendientes en la cola." << endl;
+        return;
+    }
+
+    aux->estado = "En preparacion";
+    guardarDatosEnArchivo();
+
+    cout << "\n>>> PEDIDO TOMADO POR COCINA <<<" << endl;
+    mostrarPedido(aux);
+}
+
+// Operacion Cola: Ver frente.
+// Consulta el primer pedido pendiente sin retirarlo.
+void verFrenteCola() {
+    Pedido* aux = listaInicio;
+
+    while (aux != nullptr && aux->estado != "Pendiente")
+        aux = aux->siguiente;
+
+    if (aux == nullptr) {
+        cout << "\nNo hay pedidos pendientes en la cola." << endl;
+        return;
+    }
+
+    cout << "\n>>> PROXIMO PEDIDO A PREPARAR <<<" << endl;
+    mostrarPedido(aux);
+}
+
+// Operacion Cola: Mostrar cola.
+// Se recorre la lista mostrando solo los pedidos pendientes.
+void mostrarCola() {
+    if (!hayPedidosConEstado("Pendiente")) {
+        cout << "\nCola vacia." << endl;
+        return;
+    }
+
+    cout << "\n--- COLA DE PEDIDOS PENDIENTES ---" << endl;
+    mostrarPedidosPorEstado("Pendiente");
+}
+
+
+
+
+
+
 
 
 cout << menu de opciones << endl;
