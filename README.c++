@@ -165,7 +165,165 @@ void liberarMemoria() {
     }
 }
 
+//================ PERSISTENCIA DE DATOS ================
 
+// Funcion nueva: guardarDatosEnArchivo.
+// Por que existe: permite que los pedidos no se pierdan al cerrar el programa.
+// Guarda la lista completa y la pila del historial en pedidos.txt usando fstream.
+void guardarDatosEnArchivo() {
+    ofstream archivo(NOMBRE_ARCHIVO.c_str());
+
+    if (!archivo.is_open()) {
+        cout << "\n[AVISO] No se pudo guardar el archivo de datos." << endl;
+        return;
+    }
+
+    archivo << contadorID << endl;
+
+    archivo << "LISTA" << endl;
+    archivo << contarNodos(listaInicio) << endl;
+
+    Pedido* auxLista = listaInicio;
+
+    while (auxLista != nullptr) {
+        archivo << auxLista->id << "|"
+                << auxLista->mesa << "|"
+                << auxLista->estado << "|"
+                << auxLista->plato << endl;
+
+        auxLista = auxLista->siguiente;
+    }
+
+    archivo << "PILA" << endl;
+    archivo << contarNodos(cimaPila) << endl;
+
+    Pedido* auxPila = cimaPila;
+
+    while (auxPila != nullptr) {
+        archivo << auxPila->id << "|"
+                << auxPila->mesa << "|"
+                << auxPila->estado << "|"
+                << auxPila->plato << endl;
+
+        auxPila = auxPila->siguiente;
+    }
+
+    archivo.close();
+}
+
+// Funcion nueva: obtenerCampo.
+// Por que existe: cada linea del archivo usa el separador |, entonces esta
+// funcion extrae cada dato sin pedirlo otra vez por teclado.
+string obtenerCampo(string linea, int numeroCampo) {
+    int campoActual = 1;
+    int inicio = 0;
+
+    for (int i = 0; i <= linea.length(); i++) {
+        if (i == linea.length() || linea[i] == '|') {
+            if (campoActual == numeroCampo)
+                return linea.substr(inicio, i - inicio);
+
+            campoActual++;
+            inicio = i + 1;
+        }
+    }
+
+    return "";
+}
+
+// Funcion nueva: cargarNodoDesdeLinea.
+// Por que existe: convierte una linea guardada en el archivo en un nodo Pedido.
+// Asi se reconstruyen las estructuras al iniciar el programa.
+Pedido* cargarNodoDesdeLinea(string linea) {
+    string idTexto = obtenerCampo(linea, 1);
+    string mesaTexto = obtenerCampo(linea, 2);
+    string estado = obtenerCampo(linea, 3);
+    string plato = obtenerCampo(linea, 4);
+
+    if (!esNumeroEnteroPositivo(idTexto) || !esNumeroEnteroPositivo(mesaTexto))
+        return nullptr;
+
+    if (estado != "Pendiente" && estado != "En preparacion" && estado != "Entregado")
+        return nullptr;
+
+    int id = convertirEntero(idTexto);
+    int mesa = convertirEntero(mesaTexto);
+
+    if (id == -1 || mesa == -1)
+        return nullptr;
+
+    if (id >= contadorID)
+        contadorID = id + 1;
+
+    return crearNodoPedido(id, mesa, plato, estado);
+}
+
+// Funcion nueva: cargarDatosDesdeArchivo.
+// Por que existe: al abrir el programa, lee pedidos.txt automaticamente y deja
+// cargados los pedidos anteriores para que el sistema tenga persistencia.
+void cargarDatosDesdeArchivo() {
+    ifstream archivo(NOMBRE_ARCHIVO.c_str());
+
+    if (!archivo.is_open())
+        return;
+
+    liberarMemoria();
+
+    string linea;
+
+    if (getline(archivo, linea) && esNumeroEnteroPositivo(linea)) {
+        int valor = convertirEntero(linea);
+
+        if (valor != -1)
+            contadorID = valor;
+    }
+
+    getline(archivo, linea); // Texto LISTA
+    getline(archivo, linea); // Cantidad de nodos de la lista
+
+    int cantidadLista = 0;
+
+    if (esNumeroEnteroPositivo(linea)) {
+        int valor = convertirEntero(linea);
+
+        if (valor != -1)
+            cantidadLista = valor;
+    }
+
+    for (int i = 0; i < cantidadLista; i++) {
+        if (!getline(archivo, linea))
+            break;
+
+        Pedido* pedido = cargarNodoDesdeLinea(linea);
+
+        if (pedido != nullptr)
+            agregarNodoAlFinal(listaInicio, pedido);
+    }
+
+    getline(archivo, linea); // Texto PILA
+    getline(archivo, linea); // Cantidad de nodos de la pila
+
+    int cantidadPila = 0;
+
+    if (esNumeroEnteroPositivo(linea)) {
+        int valor = convertirEntero(linea);
+
+        if (valor != -1)
+            cantidadPila = valor;
+    }
+
+    for (int i = 0; i < cantidadPila; i++) {
+        if (!getline(archivo, linea))
+            break;
+
+        Pedido* pedido = cargarNodoDesdeLinea(linea);
+
+        if (pedido != nullptr)
+            agregarNodoAlFinal(cimaPila, pedido);
+    }
+
+    archivo.close();
+}
 
 
 
