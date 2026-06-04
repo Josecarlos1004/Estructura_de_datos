@@ -442,6 +442,142 @@ void crearPedido(int mesa, string plato) {
 
     cout << "\n[OK] Pedido #" << idGenerado << " registrado." << endl;
 }
+// Operacion Lista: Eliminar pedido.
+// Se recorre la lista hasta encontrar el ID indicado y se elimina ese nodo.
+void eliminarPedido(int idEliminar) {
+    Pedido* aux = listaInicio;
+    Pedido* anterior = nullptr;
+
+    while (aux != nullptr && aux->id != idEliminar) {
+        anterior = aux;
+        aux = aux->siguiente;
+    }
+
+    if (aux == nullptr) {
+        cout << "\nNo se encontro el pedido." << endl;
+        return;
+    }
+
+    if (anterior == nullptr) {
+        listaInicio = aux->siguiente;
+    }
+    else {
+        anterior->siguiente = aux->siguiente;
+    }
+
+    delete aux;
+    guardarDatosEnArchivo();
+
+    cout << "\n[OK] Pedido #" << idEliminar << " eliminado." << endl;
+}
+
+// Operacion Lista: Buscar por mesa.
+// Se recorre toda la lista mostrando los nodos cuya mesa coincide.
+void buscarPorMesa(int mesa) {
+    Pedido* aux = listaInicio;
+    bool encontrado = false;
+
+    cout << "\n--- PEDIDOS DE LA MESA " << mesa << " ---" << endl;
+
+    while (aux != nullptr) {
+        if (aux->mesa == mesa) {
+            mostrarPedido(aux);
+            encontrado = true;
+        }
+
+        aux = aux->siguiente;
+    }
+
+    if (!encontrado)
+        cout << "La mesa " << mesa << " no tiene pedidos." << endl;
+}
+
+// Operacion Lista: Modificar estado.
+// Se recorre la lista hasta encontrar el ID indicado y se actualiza el estado.
+void marcarPedidoEntregado() {
+    if (!hayPedidosConEstado("En preparacion")) {
+        cout << "\nNo hay pedidos en preparacion." << endl;
+        return;
+    }
+
+    cout << "\n--- PEDIDOS EN PREPARACION ---" << endl;
+    mostrarPedidosPorEstado("En preparacion");
+
+    cout << "\nID del pedido entregado: ";
+    int id = pedirEntero();
+    Pedido* pedido = buscarPedidoPorID(id);
+
+    if (pedido == nullptr || pedido->estado != "En preparacion") {
+        cout << "\nOpcion invalida. Debe elegir un pedido en preparacion." << endl;
+        return;
+    }
+
+    pedido->estado = "Entregado";
+    apilarPedidoEntregado(pedido);
+    guardarDatosEnArchivo();
+
+    cout << "\n[OK] Pedido #" << id << " marcado como entregado." << endl;
+}
+
+// Operacion Lista: Mostrar lista.
+// Se recorre la lista mostrando cada pedido: Pendiente, En preparacion o Entregado.
+void mostrarListaPedidos() {
+    if (listaInicio == nullptr) {
+        cout << "\nLista vacia." << endl;
+        return;
+    }
+
+    Pedido* aux = listaInicio;
+
+    cout << "\n--- LISTA GENERAL DE PEDIDOS ---" << endl;
+
+    while (aux != nullptr) {
+        mostrarPedido(aux);
+        aux = aux->siguiente;
+    }
+}
+
+// Operacion Lista: Eliminar pedido pendiente por mesa.
+// Primero pide la mesa, muestra sus pedidos pendientes y luego elimina el ID elegido.
+void eliminarPedidoPorMesa() {
+    if (!hayPedidosConEstado("Pendiente")) {
+        cout << "\nNo hay pedidos pendientes para eliminar." << endl;
+        return;
+    }
+
+    cout << "\nMesa (1-10): ";
+    int mesa = pedirEnteroRango(1, 10);
+
+    Pedido* aux = listaInicio;
+    bool encontrado = false;
+
+    cout << "\n--- PEDIDOS PENDIENTES DE LA MESA " << mesa << " ---" << endl;
+
+    while (aux != nullptr) {
+        if (aux->mesa == mesa && aux->estado == "Pendiente") {
+            mostrarPedido(aux);
+            encontrado = true;
+        }
+
+        aux = aux->siguiente;
+    }
+
+    if (!encontrado) {
+        cout << "No hay pedidos pendientes para esa mesa." << endl;
+        return;
+    }
+
+    cout << "\nID del pedido a eliminar: ";
+    int id = pedirEntero();
+    Pedido* pedido = buscarPedidoPorID(id);
+
+    if (pedido == nullptr || pedido->mesa != mesa || pedido->estado != "Pendiente") {
+        cout << "\nOpcion invalida. Debe elegir un pedido pendiente de esa mesa." << endl;
+        return;
+    }
+
+    eliminarPedido(id);
+}
 
 //================ OPERACIONES DE COLA ================
 
