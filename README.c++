@@ -4,6 +4,109 @@
 #include <string>
 using namespace std;
 
+//================ VALIDACIONES ================
+
+bool esNumeroEnteroPositivo(string texto) {
+    if (texto.empty()) return false;
+
+    for (int i = 0; i < texto.length(); i++) {
+        if (texto[i] < '0' || texto[i] > '9')
+            return false;
+    }
+
+    return true;
+}
+
+bool esSoloLetrasYEspacios(string texto) {
+    if (texto.empty()) return false;
+
+    bool tieneLetra = false;
+
+    for (int i = 0; i < texto.length(); i++) {
+        char c = texto[i];
+
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
+            tieneLetra = true;
+        }
+        else if (c == ' ') {
+            continue;
+        }
+        else {
+            return false;
+        }
+    }
+
+    return tieneLetra;
+}
+
+int pedirEntero() {
+    string entrada;
+
+    while (true) {
+        getline(cin, entrada);
+
+        if (!esNumeroEnteroPositivo(entrada)) {
+            cout << "Opcion invalida. Intente nuevamente: ";
+            continue;
+        }
+
+        if (entrada.length() > 10) {
+            cout << "Opcion invalida. Intente nuevamente: ";
+            continue;
+        }
+
+        int valor = convertirEntero(entrada);
+
+        if (valor == -1) {
+            cout << "Opcion invalida. Intente nuevamente: ";
+            continue;
+        }
+
+        return valor;
+    }
+}
+
+int pedirEnteroRango(int minimo, int maximo) {
+    while (true) {
+        int valor = pedirEntero();
+
+        if (valor < minimo || valor > maximo) {
+            cout << "Opcion invalida. Intente nuevamente: ";
+            continue;
+        }
+
+        return valor;
+    }
+}
+
+int convertirEntero(string texto) {
+    long long numero = 0;
+
+    for (int i = 0; i < texto.length(); i++) {
+        numero = numero * 10 + (texto[i] - '0');
+
+        if (numero > 2147483647)
+            return -1;
+    }
+
+    return (int)numero;
+}
+
+string pedirPlato() {
+    string plato;
+
+    while (true) {
+        getline(cin, plato);
+
+        if (!esSoloLetrasYEspacios(plato)) {
+            cout << "Opcion invalida. Intente nuevamente: ";
+            continue;
+        }
+
+        return plato;
+    }
+}
+
 //Estructura del pedido
 struct pedido {
   int id ;
