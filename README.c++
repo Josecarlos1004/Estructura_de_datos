@@ -116,6 +116,13 @@ struct pedido {
   string estado;
   Pedido* siguiente;
 
+//================ DATOS DEL RESTAURANTE ================
+
+Pedido* listaInicio = nullptr; // Lista enlazada: guarda todos los pedidos.
+Pedido* cimaPila = nullptr;    // Pila: guarda los pedidos entregados.
+int contadorID = 1;
+const string NOMBRE_ARCHIVO = "pedidos.txt"; // Archivo usado para mantener los datos guardados.
+
   Pedido( int id, int mesa, )
 //Declaracion de Modulos 
 void crearPedido(int mesa, string plato);
@@ -272,8 +279,6 @@ void liberarMemoria() {
 //================ PERSISTENCIA DE DATOS ================
 
 // Funcion nueva: guardarDatosEnArchivo.
-// Por que existe: permite que los pedidos no se pierdan al cerrar el programa.
-// Guarda la lista completa y la pila del historial en pedidos.txt usando fstream.
 void guardarDatosEnArchivo() {
     ofstream archivo(NOMBRE_ARCHIVO.c_str());
 
@@ -316,8 +321,6 @@ void guardarDatosEnArchivo() {
 }
 
 // Funcion nueva: obtenerCampo.
-// Por que existe: cada linea del archivo usa el separador |, entonces esta
-// funcion extrae cada dato sin pedirlo otra vez por teclado.
 string obtenerCampo(string linea, int numeroCampo) {
     int campoActual = 1;
     int inicio = 0;
@@ -336,8 +339,6 @@ string obtenerCampo(string linea, int numeroCampo) {
 }
 
 // Funcion nueva: cargarNodoDesdeLinea.
-// Por que existe: convierte una linea guardada en el archivo en un nodo Pedido.
-// Asi se reconstruyen las estructuras al iniciar el programa.
 Pedido* cargarNodoDesdeLinea(string linea) {
     string idTexto = obtenerCampo(linea, 1);
     string mesaTexto = obtenerCampo(linea, 2);
@@ -363,8 +364,6 @@ Pedido* cargarNodoDesdeLinea(string linea) {
 }
 
 // Funcion nueva: cargarDatosDesdeArchivo.
-// Por que existe: al abrir el programa, lee pedidos.txt automaticamente y deja
-// cargados los pedidos anteriores para que el sistema tenga persistencia.
 void cargarDatosDesdeArchivo() {
     ifstream archivo(NOMBRE_ARCHIVO.c_str());
 
@@ -429,7 +428,20 @@ void cargarDatosDesdeArchivo() {
     archivo.close();
 }
 
+/================ OPERACIONES DE LISTA ================
 
+// Operacion Lista: Crear pedido.
+// Se crea un nodo nuevo y se agrega al final de la lista enlazada.
+// Tambien queda en la cola porque su estado inicial es Pendiente.
+void crearPedido(int mesa, string plato) {
+    int idGenerado = contadorID++;
+    Pedido* nuevo = crearNodoPedido(idGenerado, mesa, plato, "Pendiente");
+
+    agregarNodoAlFinal(listaInicio, nuevo);
+    guardarDatosEnArchivo();
+
+    cout << "\n[OK] Pedido #" << idGenerado << " registrado." << endl;
+}
 
 //================ OPERACIONES DE COLA ================
 
