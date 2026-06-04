@@ -1,257 +1,199 @@
-//Estructura_de_datos
-//Sistema de gestion de un restaurante
 #include <iostream>
 #include <string>
-#include <fstream>
+
+
 using namespace std;
 
-//================ VALIDACIONES ================
 
-bool esNumeroEnteroPositivo(string texto) {
-    if (texto.empty()) return false;
-
-    for (int i = 0; i < texto.length(); i++) {
-        if (texto[i] < '0' || texto[i] > '9')
-            return false;
-    }
-
-    return true;
-}
-
-bool esSoloLetrasYEspacios(string texto) {
-    if (texto.empty()) return false;
-
-    bool tieneLetra = false;
-
-    for (int i = 0; i < texto.length(); i++) {
-        char c = texto[i];
-
-        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z')) {
-            tieneLetra = true;
-        }
-        else if (c == ' ') {
-            continue;
-        }
-        else {
-            return false;
-        }
-    }
-
-    return tieneLetra;
-}
-
-int pedirEntero() {
-    string entrada;
-
-    while (true) {
-        getline(cin, entrada);
-
-        if (!esNumeroEnteroPositivo(entrada)) {
-            cout << "Opcion invalida. Intente nuevamente: ";
-            continue;
-        }
-
-        if (entrada.length() > 10) {
-            cout << "Opcion invalida. Intente nuevamente: ";
-            continue;
-        }
-
-        int valor = convertirEntero(entrada);
-
-        if (valor == -1) {
-            cout << "Opcion invalida. Intente nuevamente: ";
-            continue;
-        }
-
-        return valor;
-    }
-}
-
-int pedirEnteroRango(int minimo, int maximo) {
-    while (true) {
-        int valor = pedirEntero();
-
-        if (valor < minimo || valor > maximo) {
-            cout << "Opcion invalida. Intente nuevamente: ";
-            continue;
-        }
-
-        return valor;
-    }
-}
-
-int convertirEntero(string texto) {
-    long long numero = 0;
-
-    for (int i = 0; i < texto.length(); i++) {
-        numero = numero * 10 + (texto[i] - '0');
-
-        if (numero > 2147483647)
-            return -1;
-    }
-
-    return (int)numero;
-}
-
-string pedirPlato() {
+// Estructura que representa cada nodo de la lista (un pedido)
+struct Pedido {
+    int id;
+    int mesa;
     string plato;
+    string estado;
+    Pedido* siguiente;// Puntero al siguiente nodo de la lista
 
-    while (true) {
-        getline(cin, plato);
 
-        if (!esSoloLetrasYEspacios(plato)) {
-            cout << "Opcion invalida. Intente nuevamente: ";
-            continue;
+    Pedido(int _id, int _mesa, string _plato) {
+        id = _id;
+        mesa = _mesa;
+        plato = _plato;
+        estado = "Pendiente";// Estado inicial por defecto
+        siguiente = nullptr;
+    }
+};
+
+
+class GestionRestaurante {
+private:
+    Pedido* listaInicio; // Cabeza de la Lista Enlazada (Todos los pedidos)
+    Pedido* cimaPila;   //Solo pedidos entregados
+
+
+public:
+    // El restaurante empieza vacio
+    GestionRestaurante() : listaInicio(nullptr), cimaPila(nullptr) {}
+
+
+    void nuevoPedido(int id, int mesa, string plato) {
+        Pedido* nuevo = new Pedido(id, mesa, plato);
+        if (!listaInicio) {
+            listaInicio = nuevo;
+        } else {
+            Pedido* aux = listaInicio;
+            while (aux->siguiente) aux = aux->siguiente;// Recorremos hasta encontrar el ultimo nodo
+            aux->siguiente = nuevo;// El ultimo ahora apunta al nuevo
+        }
+        cout << "\n OK Pedido #" << id << " registrado como Pendiente." << endl;
+    }
+
+
+    // Submenú y condiciones
+    void cambiarEstado(int idBusqueda) {
+        if (!listaInicio) {
+            cout << "\n AVISO No hay pedidos para modificar." << endl;
+            return;
         }
 
-        return plato;
-    }
-}
 
-//Estructura del pedido
-struct pedido {
-  int id ;
-  int mesa;
-  string descripcion;
-  string estado;
-  Pedido* siguiente;
+        Pedido* aux = listaInicio;
+        while (aux) {
+            if (aux->id == idBusqueda) {
+                cout << "\nPedido encontrado: " << aux->plato << " (Mesa " << aux->mesa << ")";
+                cout << "\nEstado actual: " << aux->estado;
+               
+                // Si ya está entregado, lo finaliza
+                if (aux->estado == "Entregado") {
+                    cout << "\n ! Este pedido ya fue finalizado y entregado. No se puede cambiar." << endl;
+                    return;
+                }
 
-  Pedido( int id, int mesa, )
-Pedido* crearNodoPedido(int id, int mesa, string plato, string estado) {
-    Pedido* nuevo = new Pedido;
 
-    nuevo->id = id;
-    nuevo->mesa = mesa;
-    nuevo->plato = plato;
-    nuevo->estado = estado;
-    nuevo->siguiente = nullptr;
+                cout << "\n\nSeleccione el nuevo estado:";
+                cout << "\n1. Enviar a Cocina (En preparacion)";
+                cout << "\n2. Marcar como Entregado (Finalizar)";
+                cout << "\n3. Cancelar cambio";
+                cout << "\nOpcion: ";
+               
+                int subOp;
+                cin >> subOp;
 
-    return nuevo;
-}
 
-void agregarNodoAlFinal(Pedido*& inicio, Pedido* nuevo) {
-
-    if (inicio == nullptr) {
-        inicio = nuevo;
-        return;
-    }
-
-    Pedido* aux = inicio;
-
-    while (aux->siguiente != nullptr)
-        aux = aux->siguiente;
-
-    aux->siguiente = nuevo;
-}
-
-int contarNodos(Pedido* inicio) {
-
-    int cantidad = 0;
-    Pedido* aux = inicio;
-
-    while (aux != nullptr) {
-        cantidad++;
-        aux = aux->siguiente;
+                if (subOp == 1) {
+                    aux->estado = "En preparacion";
+                    cout << "\n[OK] El pedido #" << idBusqueda << " ahora esta en COCINA." << endl;
+                }
+                else if (subOp == 2) {
+                    aux->estado = "Entregado";
+                    // Guardar en Historial (Pila)
+                    Pedido* h = new Pedido(aux->id, aux->mesa, aux->plato);
+                    h->siguiente = cimaPila;
+                    cimaPila = h;
+                    cout << "\n[OK] El pedido #" << idBusqueda << " ha sido ENTREGADO." << endl;
+                }
+                else {
+                    cout << "\nAccion cancelada." << endl;
+                }
+                return;
+            }
+            aux = aux->siguiente;
+        }
+        cout << "\n[ERROR] No se encontro el pedido con ID " << idBusqueda << "." << endl;
     }
 
-    return cantidad;
-}
 
-void mostrarPedido(Pedido* pedido) {
-    cout << "ID: " << pedido->id
-         << " | Mesa: " << pedido->mesa
-         << " | Pedido: " << pedido->plato
-         << " | Estado: " << pedido->estado
-         << endl;
-}
-
-void mostrarPedidoSinEstado(Pedido* pedido) {
-    cout << "ID: " << pedido->id
-         << " | Mesa: " << pedido->mesa
-         << " | Pedido: " << pedido->plato
-         << endl;
-}
-
-Pedido* buscarPedidoPorID(int idBuscado) {
-    Pedido* aux = listaInicio;
-
-    while (aux != nullptr) {
-        if (aux->id == idBuscado)
-            return aux;
-
-        aux = aux->siguiente;
+    void mostrarReporteGeneral() {
+        if (!listaInicio) {
+            cout << "\nNo hay pedidos." << endl;
+            return;
+        }
+        Pedido* aux = listaInicio;
+        cout << "\nID\tMESA\tESTADO\t\tPLATO" << endl;
+        while (aux) {
+            cout << aux->id << "\t" << aux->mesa << "\t" << aux->estado << "\t" << aux->plato << endl;
+            aux = aux->siguiente;
+        }
     }
 
-    return nullptr;
-}
 
-bool hayPedidosConEstado(string estado) {
-    Pedido* aux = listaInicio;
-
-    while (aux != nullptr) {
-        if (aux->estado == estado)
-            return true;
-
-        aux = aux->siguiente;
+    void buscarMesa(int m) {
+        Pedido* aux = listaInicio;
+        bool encontrado = false;
+        while (aux) {
+            if (aux->mesa == m) {
+                cout << "ID: " << aux->id << " | " << aux->plato << " [" << aux->estado << "]" << endl;
+                encontrado = true;
+            }
+            aux = aux->siguiente;
+        }
+        if (!encontrado) cout << "Sin pedidos en mesa " << m << endl;
     }
 
-    return false;
-}
 
-void mostrarPedidosPorEstado(string estado) {
-    Pedido* aux = listaInicio;
-    bool encontrado = false;
+    void verHistorial() {
+        if (!cimaPila) {
+            cout << "\nHistorial vacio." << endl;
+            return;
+        }
+        Pedido* aux = cimaPila;
+        cout << "\n--- HISTORIAL (PILA) ---" << endl;
+        while (aux) {
+            cout << "Mesa " << aux->mesa << " entregada: " << aux->plato << endl;
+            aux = aux->siguiente;
+        }
+    }
+};
 
-    while (aux != nullptr) {
-        if (aux->estado == estado) {
-            mostrarPedido(aux);
-            encontrado = true;
+
+int main() {
+    GestionRestaurante rest;
+    int opcion = 0;
+
+
+    while (opcion != 6) {
+        cout << "\n*** MENU RESTAURANTE ***";
+        cout << "\n1. Nuevo Pedido";
+        cout << "\n2. Gestionar Estado (Cocina/Entregado)";
+        cout << "\n3. Reporte General";
+        cout << "\n4. Buscar por Mesa";
+        cout << "\n5. Historial de Ventas";
+        cout << "\n6. Salir";
+        cout << "\nSeleccione: ";
+
+
+        if (!(cin >> opcion)) {
+            cin.clear(); string ign; cin >> ign; continue;
         }
 
-        aux = aux->siguiente;
-    }
 
-    if (!encontrado)
-        cout << "\nNo hay pedidos con estado: " << estado << "." << endl;
-}
-
-void mostrarPedidosPendientesGestion() {
-    Pedido* aux = listaInicio;
-    bool encontrado = false;
-
-    while (aux != nullptr) {
-        if (aux->estado == "Pendiente") {
-            mostrarPedidoSinEstado(aux);
-            encontrado = true;
+        switch(opcion) {
+            case 1: {
+                int id, mesa; string plato;
+                cout << "ID: "; cin >> id;
+                cout << "Mesa: "; cin >> mesa;
+                cout << "Plato: "; cin >> plato;
+                rest.nuevoPedido(id, mesa, plato);
+                break;
+            }
+            case 2: {
+                int id;
+                cout << "Ingrese el ID del pedido a gestionar: ";
+                cin >> id;
+                rest.cambiarEstado(id);
+                break;
+            }
+            case 3:
+                rest.mostrarReporteGeneral();
+                break;
+            case 4: {
+                int m; cout << "Mesa: "; cin >> m;
+                rest.buscarMesa(m);
+                break;
+            }
+            case 5:
+                rest.verHistorial();
+                break;
         }
-
-        aux = aux->siguiente;
     }
-
-    if (!encontrado)
-        cout << "\nNo hay pedidos pendientes." << endl;
+    return 0;
 }
-
-void liberarMemoria() {
-    while (listaInicio != nullptr) {
-        Pedido* temp = listaInicio;
-        listaInicio = listaInicio->siguiente;
-        delete temp;
-    }
-
-    while (cimaPila != nullptr) {
-        Pedido* temp = cimaPila;
-        cimaPila = cimaPila->siguiente;
-        delete temp;
-    }
-}
-
-
-
-
-
-cout << menu de opciones << endl;
-cout << 1. Registrar Pedido << endl;
-cout << 2. Mostrar pedidos << endl;
-cout << 3. Borrar pedido  << endl;
-cout << 4. Validar pedido << endl;
