@@ -384,6 +384,83 @@ void mostrarCola() {
 
 
 
+//================ MENUS ================
+
+void menuGestionar() {
+    int opcion = 0;
+
+    while (opcion != 4) {
+        cout << "\n========== GESTIONAR PEDIDOS ==========";
+        cout << "\nPedidos pendientes:";
+        mostrarPedidosPendientesGestion();
+
+        cout << "\n1. Tomar pedido";
+        cout << "\n2. Marcar pedido entregado";
+        cout << "\n3. Eliminar pedido pendiente";
+        cout << "\n4. Volver al menu principal";
+        cout << "\nSeleccione una opcion (1-4): ";
+
+        opcion = pedirEnteroRango(1, 4);
+
+        switch (opcion) {
+        case 1:
+            tomarPedido();
+            break;
+
+        case 2:
+            marcarPedidoEntregado();
+            break;
+
+        case 3:
+            eliminarPedidoPorMesa();
+            break;
+
+        case 4:
+            cout << "\nVolviendo al menu principal..." << endl;
+            break;
+        }
+    }
+}
+
+void menuVerPedidos() {
+    int opcion = 0;
+
+    while (opcion != 5) {
+        cout << "\n========== VER PEDIDOS ==========";
+        cout << "\n1. Ver proximo a preparar";
+        cout << "\n2. Ver ultimo entregado";
+        cout << "\n3. Ver cola de pedidos pendientes";
+        cout << "\n4. Ver pila de pedidos entregados";
+        cout << "\n5. Volver al menu principal";
+        cout << "\nSeleccione una opcion (1-5): ";
+
+        opcion = pedirEnteroRango(1, 5);
+
+        switch (opcion) {
+        case 1:
+            verFrenteCola();
+            break;
+
+        case 2:
+            verCimaPila();
+            break;
+
+        case 3:
+            mostrarCola();
+            break;
+
+        case 4:
+            verHistorial();
+            break;
+
+        case 5:
+            cout << "\nVolviendo al menu principal..." << endl;
+            break;
+        }
+    }
+}
+
+
 
 
 
