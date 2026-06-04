@@ -768,14 +768,76 @@ void menuVerPedidos() {
         }
     }
 }
+//================ MAIN ================
 
+int main() {
+    cargarDatosDesdeArchivo();
 
+    int opcion = 0;
 
+    while (opcion != 8) {
+        cout << "\n========== SISTEMA DE PEDIDOS ==========";
+        cout << "\n1. Crear pedido";
+        cout << "\n2. Gestionar pedidos";
+        cout << "\n3. Mostrar pedidos";
+        cout << "\n4. Buscar por mesa";
+        cout << "\n5. Historial de pedidos vendidos";
+        cout << "\n6. Ver pedidos";
+        cout << "\n7. Borrar ultimo del historial";
+        cout << "\n8. Salir";
+        cout << "\nSeleccione una opcion (1-8): ";
 
+        opcion = pedirEnteroRango(1, 8);
 
+        switch (opcion) {
+        case 1: {
+            int mesa;
+            string plato;
 
-cout << menu de opciones << endl;
-cout << 1. Registrar Pedido << endl;
-cout << 2. Mostrar pedidos << endl;
-cout << 3. Borrar pedido  << endl;
-cout << 4. Validar pedido << endl;
+            cout << "Mesa (1-10): ";
+            mesa = pedirEnteroRango(1, 10);
+
+            cout << "Nombre del pedido: ";
+            plato = pedirPlato();
+
+            crearPedido(mesa, plato);
+            break;
+        }
+
+        case 2:
+            menuGestionar();
+            break;
+
+        case 3:
+            mostrarListaPedidos();
+            break;
+
+        case 4: {
+            cout << "Mesa (1-10): ";
+            int mesa = pedirEnteroRango(1, 10);
+            buscarPorMesa(mesa);
+            break;
+        }
+
+        case 5:
+            verHistorial();
+            break;
+
+        case 6:
+            menuVerPedidos();
+            break;
+
+        case 7:
+            desapilarHistorial();
+            break;
+
+        case 8:
+            cout << "\nSaliendo del sistema..." << endl;
+            break;
+        }
+    }
+
+    liberarMemoria();
+
+    return 0;
+}
