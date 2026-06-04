@@ -14,13 +14,23 @@ struct pedido {
 
   Pedido( int id, int mesa, )
 //Declaracion de Modulos 
-void
-void
-void
-void
-void
-void
-void
+void crearPedido(int mesa, string plato);
+void menuGestionar();
+void menuVerPedidos();
+void mostrarListaPedidos();
+void buscarPorMesa(int mesa);
+void tomarPedido();
+void marcarPedidoEntregado();
+void eliminarPedidoPorMesa();
+void verFrenteCola();
+void mostrarCola();
+void apilarPedidoEntregado(Pedido* pedido);
+void desapilarHistorial();
+void verCimaPila();
+void verHistorial();
+void liberarMemoria();
+void cargarDatosDesdeArchivo();
+void guardarDatosEnArchivo();
 
 
 //=========== Funciones Auxiliares ========================
@@ -60,7 +70,7 @@ void mostrarPedido(Pedido* pedido){
 
 } 
 
-como asi a mi no me dejaba xd
+
 
 
 
