@@ -34,41 +34,136 @@ void guardarDatosEnArchivo();
 
 
 //=========== Funciones Auxiliares ========================
-Pedido* crearNodoPedido(intid, intmesa,  string plato, string estado){
-  Pedido* nuevo = new Pedido;
-  
-  nuevo-> id;
-  nuevo-> mesa;
-  nuevo-> plato;
-  nuevo-> estado;
-  nuevo-> nullptr;
-  return nuevo;
-}
-void agregarNodoAlFinal(Pedido*& inicio, Pedido* nuevo){
-  if (inicio == nullptr){
-    inicio = nuevo;
-    return;
-  }
-  Pedido* aux = inicio;
-  while (aux -> siguiente != nullptr)
-    aux = aux -> siguientte;
+Pedido* crearNodoPedido(int id, int mesa, string plato, string estado) {
+    Pedido* nuevo = new Pedido;
 
-  aux -> siguiente = nuevo;
-  }
-int contarNodos(Pedidos* inicio){
-  int cantidad =0;
-  Pedido* aux = inicio;
+    nuevo->id = id;
+    nuevo->mesa = mesa;
+    nuevo->plato = plato;
+    nuevo->estado = estado;
+    nuevo->siguiente = nullptr;
 
-while (aux != nullptr){
-aux = aux -> siguiente;
+    return nuevo;
 }
-return cantidad;
-}
-void mostrarPedido(Pedido* pedido){
-  cout<< "ID" << pedido -> id
-<<"Mesa: " << pedidop -> mesa
 
-} 
+void agregarNodoAlFinal(Pedido*& inicio, Pedido* nuevo) {
+    // Funcion nueva: se usa para cargar nodos desde el archivo y mantener
+    // el mismo orden en que estaban guardados en la lista o en la pila.
+    if (inicio == nullptr) {
+        inicio = nuevo;
+        return;
+    }
+
+    Pedido* aux = inicio;
+
+    while (aux->siguiente != nullptr)
+        aux = aux->siguiente;
+
+    aux->siguiente = nuevo;
+}
+
+int contarNodos(Pedido* inicio) {
+    // Funcion nueva: permite saber cuantos nodos se van a guardar.
+    // Ese numero ayuda a leer despues exactamente la misma cantidad de lineas.
+    int cantidad = 0;
+    Pedido* aux = inicio;
+
+    while (aux != nullptr) {
+        cantidad++;
+        aux = aux->siguiente;
+    }
+
+    return cantidad;
+}
+
+void mostrarPedido(Pedido* pedido) {
+    cout << "ID: " << pedido->id
+         << " | Mesa: " << pedido->mesa
+         << " | Pedido: " << pedido->plato
+         << " | Estado: " << pedido->estado
+         << endl;
+}
+
+void mostrarPedidoSinEstado(Pedido* pedido) {
+    cout << "ID: " << pedido->id
+         << " | Mesa: " << pedido->mesa
+         << " | Pedido: " << pedido->plato
+         << endl;
+}
+
+Pedido* buscarPedidoPorID(int idBuscado) {
+    Pedido* aux = listaInicio;
+
+    while (aux != nullptr) {
+        if (aux->id == idBuscado)
+            return aux;
+
+        aux = aux->siguiente;
+    }
+
+    return nullptr;
+}
+
+bool hayPedidosConEstado(string estado) {
+    Pedido* aux = listaInicio;
+
+    while (aux != nullptr) {
+        if (aux->estado == estado)
+            return true;
+
+        aux = aux->siguiente;
+    }
+
+    return false;
+}
+
+void mostrarPedidosPorEstado(string estado) {
+    Pedido* aux = listaInicio;
+    bool encontrado = false;
+
+    while (aux != nullptr) {
+        if (aux->estado == estado) {
+            mostrarPedido(aux);
+            encontrado = true;
+        }
+
+        aux = aux->siguiente;
+    }
+
+    if (!encontrado)
+        cout << "\nNo hay pedidos con estado: " << estado << "." << endl;
+}
+
+void mostrarPedidosPendientesGestion() {
+    Pedido* aux = listaInicio;
+    bool encontrado = false;
+
+    while (aux != nullptr) {
+        if (aux->estado == "Pendiente") {
+            mostrarPedidoSinEstado(aux);
+            encontrado = true;
+        }
+
+        aux = aux->siguiente;
+    }
+
+    if (!encontrado)
+        cout << "\nNo hay pedidos pendientes." << endl;
+}
+
+void liberarMemoria() {
+    while (listaInicio != nullptr) {
+        Pedido* temp = listaInicio;
+        listaInicio = listaInicio->siguiente;
+        delete temp;
+    }
+
+    while (cimaPila != nullptr) {
+        Pedido* temp = cimaPila;
+        cimaPila = cimaPila->siguiente;
+        delete temp;
+    }
+}
 
 
 
