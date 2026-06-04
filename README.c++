@@ -633,7 +633,64 @@ void mostrarCola() {
     mostrarPedidosPorEstado("Pendiente");
 }
 
+//================ OPERACIONES DE PILA ================
 
+// Operacion Pila: Apilar.
+// Al entregar un pedido, se copia y se coloca en la cima del historial.
+void apilarPedidoEntregado(Pedido* pedido) {
+    Pedido* nuevo = crearNodoPedido(pedido->id, pedido->mesa, pedido->plato, "Entregado");
+
+    nuevo->siguiente = cimaPila;
+    cimaPila = nuevo;
+}
+
+// Operacion Pila: Desapilar.
+// Retira el pedido entregado mas reciente de la cima del historial.
+void desapilarHistorial() {
+    if (cimaPila == nullptr) {
+        cout << "\nHistorial vacio." << endl;
+        return;
+    }
+
+    Pedido* temp = cimaPila;
+    cimaPila = cimaPila->siguiente;
+
+    cout << "\n>>> PEDIDO RETIRADO DEL HISTORIAL <<<" << endl;
+    mostrarPedido(temp);
+
+    delete temp;
+    guardarDatosEnArchivo();
+}
+
+// Operacion Pila: Ver cima.
+// Consulta el ultimo pedido entregado sin retirarlo.
+void verCimaPila() {
+    if (cimaPila == nullptr) {
+        cout << "\nHistorial vacio." << endl;
+        return;
+    }
+
+    cout << "\n>>> ULTIMO PEDIDO ENTREGADO <<<" << endl;
+    mostrarPedido(cimaPila);
+}
+
+// Operacion Pila: Ver historial / Mostrar pila.
+// Muestra todos los pedidos entregados desde el mas reciente al mas antiguo.
+void verHistorial() {
+    if (cimaPila == nullptr) {
+        cout << "\nHistorial vacio." << endl;
+        return;
+    }
+
+    Pedido* aux = cimaPila;
+
+    cout << "\n--- HISTORIAL DE PEDIDOS VENDIDOS ---" << endl;
+
+    while (aux != nullptr) {
+        mostrarPedido(aux);
+        aux = aux->siguiente;
+    }
+}
 
 
 //================ MENUS ================
